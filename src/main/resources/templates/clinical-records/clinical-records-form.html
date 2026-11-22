@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(#{msg.title})}"></head>
+<body>
+<!-- Incluir el fragmento del header -->
+<header th:replace="~{fragments/header :: header}"></header>
+
+<main class="container mt-5">
+    <!-- El mismo formulario sirve para crear (id == null) y para editar -->
+    <h1 th:if="${fichaClinica.id == null}" th:text="#{msg.clinical-record-form.add}"></h1>
+    <h1 th:unless="${fichaClinica.id == null}" th:text="#{msg.clinical-record-form.edit}"></h1>
+
+    <!-- Muestra un mensaje de error si hay algún problema -->
+    <div th:if="${errorMessage}" class="alert alert-danger">
+        <p th:text="${errorMessage}"></p>
+    </div>
+
+    <form th:action="${fichaClinica.id == null} ? @{/clinical-records/insert} : @{/clinical-records/update}"
+          th:object="${fichaClinica}" method="post" class="mt-4">
+        <input type="hidden" th:field="*{id}" />
+
+        <div class="mb-3">
+            <label for="mascota" class="form-label" th:text="#{msg.clinical-record-form.mascota}">mascota:</label>
+            <select th:field="*{mascota.id}" id="mascota" class="form-select">
+                <option value="" th:text="#{msg.clinical-record-form.select-mascota}"></option>
+                <option th:each="c : ${listMascotas}" th:value="${c.id}" th:text="${c.nombre}"></option>
+            </select>
+            <div class="text-danger" th:if="${#fields.hasErrors('mascota')}" th:errors="*{mascota}"></div>
+        </div>
+
+        <div class="form-check mb-3">
+            <input type="checkbox" th:field="*{vacunada}" id="vacunada" class="form-check-input" />
+            <label for="vacunada" class="form-check-label" th:text="#{msg.clinical-record-form.vacunada}">vacunada</label>
+        </div>
+
+        <div class="mb-3">
+            <label for="fechaUltimaRevision" class="form-label" th:text="#{msg.clinical-record-form.fechaUltimaRevision}">fechaUltimaRevision:</label>
+            <input type="date" th:field="*{fechaUltimaRevision}" id="fechaUltimaRevision" class="form-control" />
+            <div class="text-danger" th:if="${#fields.hasErrors('fechaUltimaRevision')}" th:errors="*{fechaUltimaRevision}"></div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" th:text="${fichaClinica.id == null} ? #{msg.clinical-record-form.create} : #{msg.clinical-record-form.update}"></button>
+    </form>
+
+    <!-- Volver a la lista -->
+    <a href="#" th:href="@{/clinical-records}" class="btn btn-secondary mt-3" th:text="#{msg.clinical-record-form.returnback}"></a>
+</main>
+
+<!-- Incluir el fragmento del footer -->
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

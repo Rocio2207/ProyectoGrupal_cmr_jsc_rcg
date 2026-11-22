@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(#{msg.clinical-record.title})}"></head>
+<body>
+
+<!-- Incluir el fragmento del header -->
+<header th:replace="~{fragments/header :: header}"></header>
+
+<main class="container mt-5">
+    <h1 th:text="#{msg.clinical-record.title}"></h1>
+
+    <!-- Muestra un mensaje de error si hay algún problema -->
+    <div th:if="${errorMessage}" class="alert alert-danger">
+        <p th:text="${errorMessage}"></p>
+    </div>
+
+    <!-- Muestra todos los registros en una tabla -->
+    <table class="table table-bordered mt-3">
+        <thead>
+        <tr>
+            <th th:text="#{msg.clinical-record.id}"></th>
+            <th th:text="#{msg.clinical-record.mascota}"></th>
+            <th th:text="#{msg.clinical-record.vacunada}"></th>
+            <th th:text="#{msg.clinical-record.fechaUltimaRevision}"></th>
+            <th th:text="#{msg.clinical-record.actions}"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="e : ${listFichasClinicas}">
+            <td th:text="${e.id}"></td>
+            <td th:text="${e.mascota.nombre}"></td>
+            <td th:text="${e.vacunada} ? #{msg.clinical-record.yes} : #{msg.clinical-record.no}"></td>
+            <td th:text="${#temporals.format(e.fechaUltimaRevision, 'dd/MM/yyyy')}"></td>
+            <td>
+                <!-- Botón para editar -->
+                <a th:href="@{/clinical-records/edit(id=${e.id})}" class="btn btn-primary btn-sm" th:text="#{msg.clinical-record.edit}"></a>
+                <!-- Botón para eliminar -->
+                <form th:action="@{/clinical-records/delete}" method="post" class="d-inline">
+                    <input type="hidden" name="id" th:value="${e.id}"/>
+                    <!-- El texto traducido va en data-confirm: Thymeleaf no deja meter mensajes dentro de onclick -->
+                    <button type="submit" class="btn btn-danger btn-sm" th:attr="data-confirm=#{msg.clinical-record.confirm}" onclick="return confirm(this.dataset.confirm);" th:text="#{msg.clinical-record.delete}"></button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Botón para añadir un registro nuevo -->
+    <a th:href="@{/clinical-records/new}" class="btn btn-success mt-3" th:text="#{msg.clinical-record.add}"></a>
+    <!-- Volver a la página principal -->
+    <a href="#" th:href="@{/}" class="btn btn-secondary mt-3" th:text="#{msg.clinical-record.backHome}"></a>
+</main>
+
+<!-- Incluir el fragmento del footer -->
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+
+</body>
+</html>
