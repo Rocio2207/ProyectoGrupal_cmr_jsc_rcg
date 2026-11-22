@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(#{msg.title})}"></head>
+<body>
+<!-- Incluir el fragmento del header -->
+<header th:replace="~{fragments/header :: header}"></header>
+
+<main class="container mt-5">
+    <!-- El mismo formulario sirve para crear (id == null) y para editar -->
+    <h1 th:if="${consultorio.id == null}" th:text="#{msg.office-form.add}"></h1>
+    <h1 th:unless="${consultorio.id == null}" th:text="#{msg.office-form.edit}"></h1>
+
+    <!-- Muestra un mensaje de error si hay algún problema -->
+    <div th:if="${errorMessage}" class="alert alert-danger">
+        <p th:text="${errorMessage}"></p>
+    </div>
+
+    <form th:action="${consultorio.id == null} ? @{/offices/insert} : @{/offices/update}"
+          th:object="${consultorio}" method="post" class="mt-4">
+        <input type="hidden" th:field="*{id}" />
+
+        <div class="mb-3">
+            <label for="numero" class="form-label" th:text="#{msg.office-form.numero}">numero:</label>
+            <input type="number" th:field="*{numero}" id="numero" class="form-control" />
+            <div class="text-danger" th:if="${#fields.hasErrors('numero')}" th:errors="*{numero}"></div>
+        </div>
+
+        <div class="form-check mb-3">
+            <input type="checkbox" th:field="*{tieneQuirofano}" id="tieneQuirofano" class="form-check-input" />
+            <label for="tieneQuirofano" class="form-check-label" th:text="#{msg.office-form.tieneQuirofano}">tieneQuirofano</label>
+        </div>
+
+        <button type="submit" class="btn btn-primary" th:text="${consultorio.id == null} ? #{msg.office-form.create} : #{msg.office-form.update}"></button>
+    </form>
+
+    <!-- Volver a la lista -->
+    <a href="#" th:href="@{/offices}" class="btn btn-secondary mt-3" th:text="#{msg.office-form.returnback}"></a>
+</main>
+
+<!-- Incluir el fragmento del footer -->
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

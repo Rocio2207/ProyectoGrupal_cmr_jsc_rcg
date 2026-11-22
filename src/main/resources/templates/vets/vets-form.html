@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(#{msg.title})}"></head>
+<body>
+<!-- Incluir el fragmento del header -->
+<header th:replace="~{fragments/header :: header}"></header>
+
+<main class="container mt-5">
+    <!-- El mismo formulario sirve para crear (id == null) y para editar -->
+    <h1 th:if="${veterinario.id == null}" th:text="#{msg.vet-form.add}"></h1>
+    <h1 th:unless="${veterinario.id == null}" th:text="#{msg.vet-form.edit}"></h1>
+
+    <!-- Muestra un mensaje de error si hay algún problema -->
+    <div th:if="${errorMessage}" class="alert alert-danger">
+        <p th:text="${errorMessage}"></p>
+    </div>
+
+    <form th:action="${veterinario.id == null} ? @{/vets/insert} : @{/vets/update}"
+          th:object="${veterinario}" method="post" class="mt-4">
+        <input type="hidden" th:field="*{id}" />
+
+        <div class="mb-3">
+            <label for="nombre" class="form-label" th:text="#{msg.vet-form.nombre}">nombre:</label>
+            <input type="text" th:field="*{nombre}" id="nombre" class="form-control" />
+            <div class="text-danger" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="aniosExperiencia" class="form-label" th:text="#{msg.vet-form.aniosExperiencia}">aniosExperiencia:</label>
+            <input type="number" th:field="*{aniosExperiencia}" id="aniosExperiencia" class="form-control" />
+            <div class="text-danger" th:if="${#fields.hasErrors('aniosExperiencia')}" th:errors="*{aniosExperiencia}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="fechaAlta" class="form-label" th:text="#{msg.vet-form.fechaAlta}">fechaAlta:</label>
+            <input type="date" th:field="*{fechaAlta}" id="fechaAlta" class="form-control" />
+            <div class="text-danger" th:if="${#fields.hasErrors('fechaAlta')}" th:errors="*{fechaAlta}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="consultorio" class="form-label" th:text="#{msg.vet-form.consultorio}">consultorio:</label>
+            <select th:field="*{consultorio.id}" id="consultorio" class="form-select">
+                <option value="" th:text="#{msg.vet-form.select-consultorio}"></option>
+                <option th:each="c : ${listConsultorios}" th:value="${c.id}" th:text="${c.numero}"></option>
+            </select>
+            <div class="text-danger" th:if="${#fields.hasErrors('consultorio')}" th:errors="*{consultorio}"></div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" th:text="${veterinario.id == null} ? #{msg.vet-form.create} : #{msg.vet-form.update}"></button>
+    </form>
+
+    <!-- Volver a la lista -->
+    <a href="#" th:href="@{/vets}" class="btn btn-secondary mt-3" th:text="#{msg.vet-form.returnback}"></a>
+</main>
+
+<!-- Incluir el fragmento del footer -->
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>
