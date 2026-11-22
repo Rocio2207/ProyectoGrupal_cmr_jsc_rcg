@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(#{msg.pet.title})}"></head>
+<body>
+
+<!-- Incluir el fragmento del header -->
+<header th:replace="~{fragments/header :: header}"></header>
+
+<main class="container mt-5">
+    <h1 th:text="#{msg.pet.title}"></h1>
+
+    <!-- Muestra un mensaje de error si hay algún problema -->
+    <div th:if="${errorMessage}" class="alert alert-danger">
+        <p th:text="${errorMessage}"></p>
+    </div>
+
+    <!-- Muestra todos los registros en una tabla -->
+    <table class="table table-bordered mt-3">
+        <thead>
+        <tr>
+            <th th:text="#{msg.pet.id}"></th>
+            <th th:text="#{msg.pet.nombre}"></th>
+            <th th:text="#{msg.pet.fechaNacimiento}"></th>
+            <th th:text="#{msg.pet.foto}"></th>
+            <th th:text="#{msg.pet.actions}"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="e : ${listMascotas}">
+            <td th:text="${e.id}"></td>
+            <td th:text="${e.nombre}"></td>
+            <td th:text="${#temporals.format(e.fechaNacimiento, 'dd/MM/yyyy')}"></td>
+            <td>
+                <img th:if="${e.foto != null}"
+                     th:src="@{'/uploads/' + ${e.foto}}"
+                     alt="Foto de la mascota"
+                     style="width: 100px; height: 100px; object-fit: cover;" />
+                <span th:if="${e.foto == null}" th:text="#{msg.pet.noImage}"></span>
+            </td>
+            <td>
+                <!-- Botón para editar -->
+                <a th:href="@{/pets/edit(id=${e.id})}" class="btn btn-primary btn-sm" th:text="#{msg.pet.edit}"></a>
+                <!-- Botón para eliminar -->
+                <form th:action="@{/pets/delete}" method="post" class="d-inline">
+                    <input type="hidden" name="id" th:value="${e.id}"/>
+                    <!-- El texto traducido va en data-confirm: Thymeleaf no deja meter mensajes dentro de onclick -->
+                    <button type="submit" class="btn btn-danger btn-sm" th:attr="data-confirm=#{msg.pet.confirm}" onclick="return confirm(this.dataset.confirm);" th:text="#{msg.pet.delete}"></button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Botón para añadir un registro nuevo -->
+    <a th:href="@{/pets/new}" class="btn btn-success mt-3" th:text="#{msg.pet.add}"></a>
+    <!-- Volver a la página principal -->
+    <a href="#" th:href="@{/}" class="btn btn-secondary mt-3" th:text="#{msg.pet.backHome}"></a>
+</main>
+
+<!-- Incluir el fragmento del footer -->
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+
+</body>
+</html>
