@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(#{msg.title})}"></head>
+<body>
+<!-- Incluir el fragmento del header -->
+<header th:replace="~{fragments/header :: header}"></header>
+
+<main class="container mt-5">
+    <!-- El mismo formulario sirve para crear (id == null) y para editar -->
+    <h1 th:if="${mascota.id == null}" th:text="#{msg.pet-form.add}"></h1>
+    <h1 th:unless="${mascota.id == null}" th:text="#{msg.pet-form.edit}"></h1>
+
+    <!-- Muestra un mensaje de error si hay algún problema -->
+    <div th:if="${errorMessage}" class="alert alert-danger">
+        <p th:text="${errorMessage}"></p>
+    </div>
+
+    <form th:action="${mascota.id == null} ? @{/pets/insert} : @{/pets/update}"
+          th:object="${mascota}" method="post" enctype="multipart/form-data" class="mt-4">
+        <input type="hidden" th:field="*{id}" />
+
+        <div class="mb-3">
+            <label for="nombre" class="form-label" th:text="#{msg.pet-form.nombre}">nombre:</label>
+            <input type="text" th:field="*{nombre}" id="nombre" class="form-control" />
+            <div class="text-danger" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="fechaNacimiento" class="form-label" th:text="#{msg.pet-form.fechaNacimiento}">fechaNacimiento:</label>
+            <input type="date" th:field="*{fechaNacimiento}" id="fechaNacimiento" class="form-control" />
+            <div class="text-danger" th:if="${#fields.hasErrors('fechaNacimiento')}" th:errors="*{fechaNacimiento}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="imageFile" class="form-label" th:text="#{msg.pet-form.foto}">Foto:</label>
+            <!-- Foto actual (al editar) -->
+            <div th:if="${mascota.foto != null}" class="mb-2">
+                <img th:src="@{'/uploads/' + ${mascota.foto}}" alt="Foto de la mascota"
+                     style="width: 100px; height: 100px; object-fit: cover;" />
+            </div>
+            <input type="file" name="imageFile" id="imageFile" class="form-control" accept="image/*"/>
+            <div class="text-danger" th:if="${#fields.hasErrors('foto')}" th:errors="*{foto}"></div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" th:text="${mascota.id == null} ? #{msg.pet-form.create} : #{msg.pet-form.update}"></button>
+    </form>
+
+    <!-- Volver a la lista -->
+    <a href="#" th:href="@{/pets}" class="btn btn-secondary mt-3" th:text="#{msg.pet-form.returnback}"></a>
+</main>
+
+<!-- Incluir el fragmento del footer -->
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>
