@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(#{msg.office.title})}"></head>
+<body>
+
+<!-- Incluir el fragmento del header -->
+<header th:replace="~{fragments/header :: header}"></header>
+
+<main class="container mt-5">
+    <h1 th:text="#{msg.office.title}"></h1>
+
+    <!-- Muestra un mensaje de error si hay algún problema -->
+    <div th:if="${errorMessage}" class="alert alert-danger">
+        <p th:text="${errorMessage}"></p>
+    </div>
+
+    <!-- Muestra todos los registros en una tabla -->
+    <table class="table table-bordered mt-3">
+        <thead>
+        <tr>
+            <th th:text="#{msg.office.id}"></th>
+            <th th:text="#{msg.office.numero}"></th>
+            <th th:text="#{msg.office.tieneQuirofano}"></th>
+            <th th:text="#{msg.office.veterinario}"></th>
+            <th th:text="#{msg.office.actions}"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="e : ${listConsultorios}">
+            <td th:text="${e.id}"></td>
+            <td th:text="${e.numero}"></td>
+            <td th:text="${e.tieneQuirofano} ? #{msg.office.yes} : #{msg.office.no}"></td>
+            <td th:text="${e.veterinario != null} ? ${e.veterinario.nombre} : #{msg.office.none}"></td>
+            <td>
+                <!-- Botón para editar -->
+                <a th:href="@{/offices/edit(id=${e.id})}" class="btn btn-primary btn-sm" th:text="#{msg.office.edit}"></a>
+                <!-- Botón para eliminar -->
+                <form th:action="@{/offices/delete}" method="post" class="d-inline">
+                    <input type="hidden" name="id" th:value="${e.id}"/>
+                    <!-- El texto traducido va en data-confirm: Thymeleaf no deja meter mensajes dentro de onclick -->
+                    <button type="submit" class="btn btn-danger btn-sm" th:attr="data-confirm=#{msg.office.confirm}" onclick="return confirm(this.dataset.confirm);" th:text="#{msg.office.delete}"></button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Botón para añadir un registro nuevo -->
+    <a th:href="@{/offices/new}" class="btn btn-success mt-3" th:text="#{msg.office.add}"></a>
+    <!-- Volver a la página principal -->
+    <a href="#" th:href="@{/}" class="btn btn-secondary mt-3" th:text="#{msg.office.backHome}"></a>
+</main>
+
+<!-- Incluir el fragmento del footer -->
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+
+</body>
+</html>
