@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(#{msg.consultation.title})}"></head>
+<body>
+
+<!-- Incluir el fragmento del header -->
+<header th:replace="~{fragments/header :: header}"></header>
+
+<main class="container mt-5">
+    <h1 th:text="#{msg.consultation.title}"></h1>
+
+    <!-- Muestra un mensaje de error si hay algún problema -->
+    <div th:if="${errorMessage}" class="alert alert-danger">
+        <p th:text="${errorMessage}"></p>
+    </div>
+
+    <!-- Muestra todos los registros en una tabla -->
+    <table class="table table-bordered mt-3">
+        <thead>
+        <tr>
+            <th th:text="#{msg.consultation.id}"></th>
+            <th th:text="#{msg.consultation.fechaHora}"></th>
+            <th th:text="#{msg.consultation.duracionMinutos}"></th>
+            <th th:text="#{msg.consultation.urgente}"></th>
+            <th th:text="#{msg.consultation.mascota}"></th>
+            <th th:text="#{msg.consultation.veterinario}"></th>
+            <th th:text="#{msg.consultation.tratamientos}"></th>
+            <th th:text="#{msg.consultation.actions}"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="e : ${listConsultas}">
+            <td th:text="${e.id}"></td>
+            <td th:text="${#temporals.format(e.fechaHora, 'dd/MM/yyyy HH:mm')}"></td>
+            <td th:text="${e.duracionMinutos}"></td>
+            <td th:text="${e.urgente} ? #{msg.consultation.yes} : #{msg.consultation.no}"></td>
+            <td th:text="${e.mascota.nombre}"></td>
+            <td th:text="${e.veterinario.nombre}"></td>
+            <td>
+                <span th:each="t, st : ${e.tratamientos}" th:text="${t.nombre} + (${st.last} ? '' : ', ')"></span>
+                <span th:if="${#lists.isEmpty(e.tratamientos)}" th:text="#{msg.consultation.none}"></span>
+            </td>
+            <td>
+                <!-- Botón para editar -->
+                <a th:href="@{/consultations/edit(id=${e.id})}" class="btn btn-primary btn-sm" th:text="#{msg.consultation.edit}"></a>
+                <!-- Botón para eliminar -->
+                <form th:action="@{/consultations/delete}" method="post" class="d-inline">
+                    <input type="hidden" name="id" th:value="${e.id}"/>
+                    <!-- El texto traducido va en data-confirm: Thymeleaf no deja meter mensajes dentro de onclick -->
+                    <button type="submit" class="btn btn-danger btn-sm" th:attr="data-confirm=#{msg.consultation.confirm}" onclick="return confirm(this.dataset.confirm);" th:text="#{msg.consultation.delete}"></button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Botón para añadir un registro nuevo -->
+    <a th:href="@{/consultations/new}" class="btn btn-success mt-3" th:text="#{msg.consultation.add}"></a>
+    <!-- Volver a la página principal -->
+    <a href="#" th:href="@{/}" class="btn btn-secondary mt-3" th:text="#{msg.consultation.backHome}"></a>
+</main>
+
+<!-- Incluir el fragmento del footer -->
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+
+</body>
+</html>
