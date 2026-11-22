@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(#{msg.title})}"></head>
+<body>
+<!-- Incluir el fragmento del header -->
+<header th:replace="~{fragments/header :: header}"></header>
+
+<main class="container mt-5">
+    <!-- El mismo formulario sirve para crear (id == null) y para editar -->
+    <h1 th:if="${consulta.id == null}" th:text="#{msg.consultation-form.add}"></h1>
+    <h1 th:unless="${consulta.id == null}" th:text="#{msg.consultation-form.edit}"></h1>
+
+    <!-- Muestra un mensaje de error si hay algún problema -->
+    <div th:if="${errorMessage}" class="alert alert-danger">
+        <p th:text="${errorMessage}"></p>
+    </div>
+
+    <form th:action="${consulta.id == null} ? @{/consultations/insert} : @{/consultations/update}"
+          th:object="${consulta}" method="post" class="mt-4">
+        <input type="hidden" th:field="*{id}" />
+
+        <div class="mb-3">
+            <label for="fechaHora" class="form-label" th:text="#{msg.consultation-form.fechaHora}">fechaHora:</label>
+            <input type="datetime-local" th:field="*{fechaHora}" id="fechaHora" class="form-control" />
+            <div class="text-danger" th:if="${#fields.hasErrors('fechaHora')}" th:errors="*{fechaHora}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="duracionMinutos" class="form-label" th:text="#{msg.consultation-form.duracionMinutos}">duracionMinutos:</label>
+            <input type="number" th:field="*{duracionMinutos}" id="duracionMinutos" class="form-control" />
+            <div class="text-danger" th:if="${#fields.hasErrors('duracionMinutos')}" th:errors="*{duracionMinutos}"></div>
+        </div>
+
+        <div class="form-check mb-3">
+            <input type="checkbox" th:field="*{urgente}" id="urgente" class="form-check-input" />
+            <label for="urgente" class="form-check-label" th:text="#{msg.consultation-form.urgente}">urgente</label>
+        </div>
+
+        <div class="mb-3">
+            <label for="mascota" class="form-label" th:text="#{msg.consultation-form.mascota}">mascota:</label>
+            <select th:field="*{mascota.id}" id="mascota" class="form-select">
+                <option value="" th:text="#{msg.consultation-form.select-mascota}"></option>
+                <option th:each="c : ${listMascotas}" th:value="${c.id}" th:text="${c.nombre}"></option>
+            </select>
+            <div class="text-danger" th:if="${#fields.hasErrors('mascota')}" th:errors="*{mascota}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="veterinario" class="form-label" th:text="#{msg.consultation-form.veterinario}">veterinario:</label>
+            <select th:field="*{veterinario.id}" id="veterinario" class="form-select">
+                <option value="" th:text="#{msg.consultation-form.select-veterinario}"></option>
+                <option th:each="c : ${listVeterinarios}" th:value="${c.id}" th:text="${c.nombre}"></option>
+            </select>
+            <div class="text-danger" th:if="${#fields.hasErrors('veterinario')}" th:errors="*{veterinario}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" th:text="#{msg.consultation-form.tratamientos}">Tratamientos:</label>
+            <div class="form-check" th:each="t : ${listTratamientos}">
+                <input type="checkbox" class="form-check-input" name="tratamientosIds"
+                       th:id="'tratamiento' + ${t.id}" th:value="${t.id}"
+                       th:checked="${consulta.tratamientos != null and consulta.tratamientos.![id].contains(t.id)}" />
+                <label class="form-check-label" th:for="'tratamiento' + ${t.id}" th:text="${t.nombre}"></label>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" th:text="${consulta.id == null} ? #{msg.consultation-form.create} : #{msg.consultation-form.update}"></button>
+    </form>
+
+    <!-- Volver a la lista -->
+    <a href="#" th:href="@{/consultations}" class="btn btn-secondary mt-3" th:text="#{msg.consultation-form.returnback}"></a>
+</main>
+
+<!-- Incluir el fragmento del footer -->
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>
