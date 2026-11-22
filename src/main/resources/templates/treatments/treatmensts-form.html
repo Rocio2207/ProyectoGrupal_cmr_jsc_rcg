@@ -1,10 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(#{msg.title})}"></head>
 <body>
+<!-- Incluir el fragmento del header -->
+<header th:replace="~{fragments/header :: header}"></header>
 
+<main class="container mt-5">
+    <!-- El mismo formulario sirve para crear (id == null) y para editar -->
+    <h1 th:if="${tratamiento.id == null}" th:text="#{msg.treatment-form.add}"></h1>
+    <h1 th:unless="${tratamiento.id == null}" th:text="#{msg.treatment-form.edit}"></h1>
+
+    <!-- Muestra un mensaje de error si hay algún problema -->
+    <div th:if="${errorMessage}" class="alert alert-danger">
+        <p th:text="${errorMessage}"></p>
+    </div>
+
+    <form th:action="${tratamiento.id == null} ? @{/treatments/insert} : @{/treatments/update}"
+          th:object="${tratamiento}" method="post" class="mt-4">
+        <input type="hidden" th:field="*{id}" />
+
+        <div class="mb-3">
+            <label for="nombre" class="form-label" th:text="#{msg.treatment-form.nombre}">nombre:</label>
+            <input type="text" th:field="*{nombre}" id="nombre" class="form-control" />
+            <div class="text-danger" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="precioEuros" class="form-label" th:text="#{msg.treatment-form.precioEuros}">precioEuros:</label>
+            <input type="number" th:field="*{precioEuros}" id="precioEuros" class="form-control" />
+            <div class="text-danger" th:if="${#fields.hasErrors('precioEuros')}" th:errors="*{precioEuros}"></div>
+        </div>
+
+        <div class="form-check mb-3">
+            <input type="checkbox" th:field="*{requiereReceta}" id="requiereReceta" class="form-check-input" />
+            <label for="requiereReceta" class="form-check-label" th:text="#{msg.treatment-form.requiereReceta}">requiereReceta</label>
+        </div>
+
+        <button type="submit" class="btn btn-primary" th:text="${tratamiento.id == null} ? #{msg.treatment-form.create} : #{msg.treatment-form.update}"></button>
+    </form>
+
+    <!-- Volver a la lista -->
+    <a href="#" th:href="@{/treatments}" class="btn btn-secondary mt-3" th:text="#{msg.treatment-form.returnback}"></a>
+</main>
+
+<!-- Incluir el fragmento del footer -->
+<footer th:replace="~{fragments/footer :: footer}"></footer>
 </body>
 </html>
