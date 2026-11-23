@@ -25,10 +25,10 @@ CREATE TABLE IF NOT EXISTS mascota (
 
 -- Crear tabla para las fichas clínicas
 CREATE TABLE IF NOT EXISTS fichaClinica (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     vacunada BOOLEAN NOT NULL DEFAULT FALSE,
     fechaUltimaRevision DATE NOT NULL,
-    mascota_id BIGINT NOT NULL UNIQUE,
+    mascota_id INT NOT NULL UNIQUE,
     FOREIGN KEY (mascota_id) REFERENCES mascota(id)
 );
 
@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS consulta (
     fechaHora DATETIME NOT NULL,
     duracionMinutos INT NOT NULL CHECK (duracionMinutos > 0),
     urgente BOOLEAN NOT NULL DEFAULT FALSE,
-    mascota_id BIGINT NOT NULL,
+    mascota_id INT NOT NULL,
     veterinario_id INT NOT NULL,
     FOREIGN KEY (mascota_id) REFERENCES mascota(id),
     FOREIGN KEY (veterinario_id) REFERENCES veterinario(id)
@@ -54,8 +54,8 @@ CREATE TABLE IF NOT EXISTS consulta (
 
 -- Tabla intermedia Consulta <-> Tratamiento
 CREATE TABLE IF NOT EXISTS consulta_tratamiento (
-    consulta_id BIGINT NOT NULL,
-    tratamiento_id BIGINT NOT NULL,
+    consulta_id INT NOT NULL,
+    tratamiento_id INT NOT NULL,
     PRIMARY KEY (consulta_id, tratamiento_id),
     FOREIGN KEY (consulta_id) REFERENCES consulta(id),
     FOREIGN KEY (tratamiento_id) REFERENCES tratamiento(id)
